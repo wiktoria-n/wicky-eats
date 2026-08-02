@@ -123,6 +123,16 @@
       radial-gradient(circle at 30% 25%, rgba(255,255,255,0.55), transparent 50%),
       linear-gradient(135deg, var(--swatch-a,#DCEA7B), var(--swatch-b,#F5C99A));
   }
+  .rcard-img{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+  }
+  .detail-img{
+    width:100%; height:100%;
+    object-fit:cover;
+    border-radius:26px;
+  }
   .rcard-badge{
     position:absolute; top:14px; right:14px;
     background:rgba(255,255,255,0.92);
@@ -289,6 +299,15 @@
     border-bottom:1px dashed rgba(38,34,26,0.2);
   }
   .ingredients li .amt{ font-weight:800; white-space:nowrap; }
+  .ingredients li.ing-section-header{
+    font-size:11px; font-weight:800;
+    text-transform:uppercase; letter-spacing:0.07em;
+    color:var(--ink-soft);
+    border-bottom:none;
+    padding-top:16px; padding-bottom:2px;
+    display:block;
+  }
+  .ingredients li.ing-section-header:first-child{ padding-top:0; }
 
   .steps{ list-style:none; }
   .steps li{
@@ -396,23 +415,29 @@ const recipes = [
     time: "15 mins",
     baseServings: 1,
     macros: { kcal: 450, protein: 45, carbs: 12, fat: 22 },
-    ingredients: [
-      { amount: 200, unit: "g", name: "lean beef mince (5% fat)" },
-      { amount: 0.5, unit: "tsp", name: "garlic powder" },
-      { amount: 0.5, unit: "tsp", name: "onion powder" },
-      { amount: 0.5, unit: "tsp", name: "smoked paprika" },
-      { amount: 1, unit: "pinch", name: "salt & pepper" },
-      { amount: 2, unit: "large", name: "lettuce leaves, shredded" },
-      { amount: 1, unit: "medium", name: "tomato, diced" },
-      { amount: 4, unit: "slices", name: "pickles" },
-      { amount: 0.25, unit: "small", name: "white onion, finely diced" },
-      { amount: 1, unit: "slice", name: "reduced-fat cheddar" },
-      { amount: 3, unit: "tbsp", name: "0% Greek yoghurt (sauce base)" },
-      { amount: 1, unit: "tsp", name: "American mustard" },
-      { amount: 1, unit: "tsp", name: "low-sugar ketchup" },
-      { amount: 1, unit: "tsp", name: "pickle juice" },
-      { amount: 0.5, unit: "tsp", name: "white wine vinegar" },
-      { amount: 1, unit: "pinch", name: "sesame seeds (optional, for garnish)" }
+    ingredientSections: [
+      {
+        label: "Main",
+        items: [
+          { amount: 2, unit: null, name: "Burger Patty's (5%)" },
+          { amount: 2, unit: "large", name: "lettuce leaves, shredded" },
+          { amount: 1, unit: "medium", name: "tomato, diced" },
+          { amount: 4, unit: "slices", name: "pickles" },
+          { amount: 0.25, unit: "small", name: "white onion, finely diced" },
+          { amount: 1, unit: "slice", name: "reduced-fat cheddar" },
+          { amount: 1, unit: "pinch", name: "sesame seeds (optional, for garnish)" }
+        ]
+      },
+      {
+        label: "Sauce",
+        items: [
+          { amount: 3, unit: "tbsp", name: "0% Greek yoghurt (sauce base)" },
+          { amount: 1, unit: "tsp", name: "American mustard" },
+          { amount: 1, unit: "tsp", name: "low-sugar ketchup" },
+          { amount: 1, unit: "tsp", name: "pickle juice" },
+          { amount: 0.5, unit: "tsp", name: "white wine vinegar" }
+        ]
+      }
     ],
     steps: [
       "Mix Greek yoghurt, mustard, ketchup, pickle juice, vinegar, a pinch of garlic powder, and onion powder. Stir well and refrigerate while you cook.",
@@ -428,6 +453,7 @@ const recipes = [
   },
   {
     id: "cinnamon-rolls",
+    image: "cinammon-rolls.jpg",
     type: "dessert",
     title: "High Protein Cinnamon Rolls",
     subtitle: "Fluffy Greek yoghurt buns with brown stevia & cinnamon filling, topped with a protein cream cheese frosting",
@@ -478,6 +504,8 @@ const recipes = [
   },
   {
     id: "lemon-tiramisu",
+    image: "lemon-tiramisu.jpg",
+    imagePosition: "bottom",
     type: "dessert",
     title: "Lemon Tiramisu",
     subtitle: "Bright, creamy, no-bake lemon dessert layered with skyr and lemon curd",
@@ -565,9 +593,9 @@ function renderList(){
 
   recipeList.innerHTML = list.map(r => `
     <div class="rcard" data-id="${r.id}" style="--swatch-a:${r.swatchA}; --swatch-b:${r.swatchB};">
-      <div class="rcard-photo">
+      <div class="rcard-photo" style="--swatch-a:${r.swatchA}; --swatch-b:${r.swatchB};">
         <span class="rcard-badge">${r.badge.icon} ${r.badge.label}</span>
-        ${r.emoji}
+        ${r.image ? `<img class="rcard-img" src="${r.image}" alt="${r.title}" style="object-position:${r.imagePosition || 'center'}">` : r.emoji}
       </div>
       <div class="rcard-body">
         <div class="rcard-title">${r.title}</div>
@@ -581,8 +609,6 @@ function renderList(){
         <div class="card-macro-row">
           <div><b>${r.macros.kcal}</b><span>kcal</span></div>
           <div><b>${r.macros.protein}g</b><span>protein</span></div>
-          <div><b>${r.macros.carbs}g</b><span>carbs</span></div>
-          <div><b>${r.macros.fat}g</b><span>fat</span></div>
         </div>
       </div>
     </div>
@@ -660,7 +686,9 @@ function renderDetail(r){
       <button class="round-btn" onclick="closeDetail()">←</button>
       <button class="round-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${r.id}')">${liked ? '♥' : '♡'}</button>
     </div>
-    <div class="detail-photo" style="--swatch-a:${r.swatchA}; --swatch-b:${r.swatchB};">${r.emoji}</div>
+    <div class="detail-photo" style="--swatch-a:${r.swatchA}; --swatch-b:${r.swatchB};">
+      ${r.image ? `<img class="detail-img" src="${r.image}" alt="${r.title}" style="object-position:${r.imagePosition || 'center'}">` : r.emoji}
+    </div>
     <div class="detail-body">
       <div class="detail-title">${r.title}, <span class="kcal">${r.macros.kcal} Kcal</span></div>
       <div class="detail-sub">${r.subtitle}</div>
@@ -681,11 +709,21 @@ function renderDetail(r){
         <button class="stepper-btn" onclick="adjustServings('${r.id}', 1)">+</button>
       </div>
       <ul class="ingredients">
-        ${r.ingredients.map(ing => {
-          const scaled = scaleAmount(ing.amount, r.baseServings, servings);
-          const amtStr = ing.unit ? `${scaled} ${ing.unit}` : `${scaled}`;
-          return `<li><span>${ing.name}</span><span class="amt">${amtStr}</span></li>`;
-        }).join('')}
+        ${r.ingredientSections
+          ? r.ingredientSections.map(sec => `
+              <li class="ing-section-header">${sec.label}</li>
+              ${sec.items.map(ing => {
+                const scaled = scaleAmount(ing.amount, r.baseServings, servings);
+                const amtStr = ing.unit ? `${scaled} ${ing.unit}` : `${scaled}`;
+                return `<li><span>${ing.name}</span><span class="amt">${amtStr}</span></li>`;
+              }).join('')}
+            `).join('')
+          : r.ingredients.map(ing => {
+              const scaled = scaleAmount(ing.amount, r.baseServings, servings);
+              const amtStr = ing.unit ? `${scaled} ${ing.unit}` : `${scaled}`;
+              return `<li><span>${ing.name}</span><span class="amt">${amtStr}</span></li>`;
+            }).join('')
+        }
       </ul>
 
       <div class="section-label">Instructions</div>
