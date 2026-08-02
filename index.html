@@ -368,11 +368,6 @@
     <div class="cat-row" id="catRow"></div>
 
     <div class="count-row">
-      <h2 id="countLabel">1 dessert</h2>
-      <div class="count-actions">
-        <button class="chip-btn active-toggle">▦</button>
-        <button class="chip-btn">⚙</button>
-      </div>
     </div>
 
     <div class="recipe-list" id="recipeList"></div>
@@ -562,7 +557,6 @@ function renderCategories(){
 }
 
 const recipeList = document.getElementById('recipeList');
-const countLabel = document.getElementById('countLabel');
 
 function filteredRecipes(){
   const desserts = recipes.filter(r => r.type !== 'savoury');
@@ -571,7 +565,6 @@ function filteredRecipes(){
 
 function renderList(){
   const list = filteredRecipes();
-  countLabel.textContent = `${list.length} dessert${list.length === 1 ? '' : 's'}`;
 
   if(list.length === 0){
     recipeList.innerHTML = `
