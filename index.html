@@ -71,25 +71,20 @@
   .tagline{ font-size:13.5px; color:var(--ink-soft); margin-bottom:24px; max-width:26ch; line-height:1.5; }
 
   /* ---------------- CATEGORY ROW ---------------- */
-  .cat-row{ display:flex; justify-content:space-between; margin-bottom:26px; }
+  .cat-row{ display:flex; gap:10px; margin-bottom:26px; }
   .cat{
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-    cursor:pointer; background:none; border:none;
+    padding:10px 24px;
+    border-radius:22px;
+    background:rgba(255,255,255,0.45);
+    border:2px solid transparent;
+    cursor:pointer;
     font-family:'Nunito', sans-serif;
-    opacity:0.55;
+    font-size:13px; font-weight:700;
+    opacity:0.6;
     transition:opacity .2s, transform .2s;
   }
-  .cat.active{ opacity:1; }
-  .cat:hover{ transform:translateY(-2px); }
-  .cat-circle{
-    width:56px; height:56px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-size:26px;
-    background:rgba(255,255,255,0.65);
-    border:2px solid transparent;
-  }
-  .cat.active .cat-circle{ border-color:var(--ink); background:#fff; }
-  .cat-label{ font-size:11.5px; font-weight:700; }
+  .cat.active{ opacity:1; background:#fff; border-color:var(--ink); }
+  .cat:hover{ transform:translateY(-2px); opacity:1; }
 
   /* ---------------- COUNT ROW ---------------- */
   .count-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
@@ -460,7 +455,7 @@ const recipes = [
     emoji: "🥐",
     swatchA: "#F5C99A",
     swatchB: "#E8A87C",
-    category: "baked",
+    category: "pastry",
     badge: { icon: "🔥", label: "Baked" },
     attributes: [
       { icon: "💪", label: "High-Protein" },
@@ -512,7 +507,7 @@ const recipes = [
     emoji: "🍋",
     swatchA: "#DCEA7B",
     swatchB: "#F5C99A",
-    category: "no-bake",
+    category: "cold",
     badge: { icon: "🌙", label: "No-Bake" },
     attributes: [
       { icon: "💪", label: "High-Protein" },
@@ -542,11 +537,8 @@ const recipes = [
 ];
 
 const categories = [
-  { id: "all", label: "All", icon: "✨" },
-  { id: "no-bake", label: "No-Bake", icon: "🌙" },
-  { id: "baked", label: "Baked", icon: "🔥" },
-  { id: "frozen", label: "Frozen", icon: "❄️" },
-  { id: "mousse", label: "Mousse", icon: "🥣" }
+  { id: "cold", label: "Cold" },
+  { id: "pastry", label: "Pastry" }
 ];
 
 let activeCategory = "all";
@@ -557,13 +549,12 @@ const catRow = document.getElementById('catRow');
 function renderCategories(){
   catRow.innerHTML = categories.map(c => `
     <button class="cat ${c.id === activeCategory ? 'active' : ''}" data-cat="${c.id}">
-      <span class="cat-circle">${c.icon}</span>
-      <span class="cat-label">${c.label}</span>
+      ${c.label}
     </button>
   `).join('');
   catRow.querySelectorAll('.cat').forEach(btn => {
     btn.addEventListener('click', () => {
-      activeCategory = btn.dataset.cat;
+      activeCategory = activeCategory === btn.dataset.cat ? 'all' : btn.dataset.cat;
       renderCategories();
       renderList();
     });
