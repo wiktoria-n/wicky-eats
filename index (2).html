@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wicky Eats — Cook Lighter, Not Sadder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#26221A;
+    --ink-soft:#5c5748;
+    --cream:#FFFDF7;
+    --nav-dark:#221F19;
+    --lime:#DCEA7B;
+    --lavender:#D6C3EC;
+    --peach:#F5C99A;
+    --berry:#E8778F;
+    --sage:#A6C98F;
+    --line:rgba(38,34,26,0.12);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 10%, #f3e9d8 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, #f0e2ef 0%, transparent 45%),
+      #EDE6D6;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:40px 16px 60px;
+  }
+  h1,h2,h3,.display{ font-family:'Fredoka', sans-serif; }
+
+  /* ---------------- APP FRAME ---------------- */
+  .app{
+    width:100%;
+    max-width:430px;
+    background:linear-gradient(165deg, #EAF3A6 0%, #F0E8B0 32%, #F1E3D4 62%, #ECE1EE 100%);
+    border-radius:36px;
+    box-shadow:0 30px 70px rgba(38,34,26,0.28), 0 0 0 10px #fff, 0 0 0 11px rgba(38,34,26,0.08);
+    overflow:hidden;
+    position:relative;
+    min-height:850px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .app-scroll{
+    flex:1;
+    overflow-y:auto;
+    padding:26px 22px 110px;
+  }
+  .app-scroll::-webkit-scrollbar{ display:none; }
+
+  /* ---------------- TOP BAR ---------------- */
+  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+  .brand{ font-size:22px; font-weight:600; letter-spacing:-0.01em; }
+  .brand em{ font-style:normal; color:var(--berry); }
+  .icon-btn{
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(255,255,255,0.6);
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px;
+    border:none; cursor:pointer;
+  }
+
+  .tagline{ font-size:13.5px; color:var(--ink-soft); margin-bottom:24px; max-width:26ch; line-height:1.5; }
+
+  /* ---------------- CATEGORY ROW ---------------- */
+  .cat-row{ display:flex; justify-content:space-between; margin-bottom:26px; }
+  .cat{
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    cursor:pointer; background:none; border:none;
+    font-family:'Nunito', sans-serif;
+    opacity:0.55;
+    transition:opacity .2s, transform .2s;
+  }
+  .cat.active{ opacity:1; }
+  .cat:hover{ transform:translateY(-2px); }
+  .cat-circle{
+    width:56px; height:56px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px;
+    background:rgba(255,255,255,0.65);
+    border:2px solid transparent;
+  }
+  .cat.active .cat-circle{ border-color:var(--ink); background:#fff; }
+  .cat-label{ font-size:11.5px; font-weight:700; }
+
+  /* ---------------- COUNT ROW ---------------- */
+  .count-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .count-row h2{ font-size:24px; font-weight:600; }
+  .count-actions{ display:flex; gap:8px; }
+  .chip-btn{
+    width:34px; height:34px; border-radius:50%;
+    background:rgba(255,255,255,0.7);
+    border:none; cursor:pointer; font-size:14px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .chip-btn.active-toggle{ background:var(--ink); color:#fff; }
+
+  /* ---------------- RECIPE CARD ---------------- */
+  .recipe-list{ display:flex; flex-direction:column; gap:20px; }
+  .rcard{
+    background:var(--cream);
+    border-radius:24px;
+    overflow:hidden;
+    cursor:pointer;
+    box-shadow:0 10px 24px rgba(38,34,26,0.08);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .rcard:hover{ transform:translateY(-3px); box-shadow:0 16px 32px rgba(38,34,26,0.14); }
+  .rcard-photo{
+    position:relative;
+    height:180px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:76px;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255,255,255,0.55), transparent 50%),
+      linear-gradient(135deg, var(--swatch-a,#DCEA7B), var(--swatch-b,#F5C99A));
+  }
+  .rcard-badge{
+    position:absolute; top:14px; right:14px;
+    background:rgba(255,255,255,0.92);
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:11.5px;
+    font-weight:700;
+    display:flex; align-items:center; gap:5px;
+  }
+  .rcard-body{ padding:16px 18px 20px; }
+  .rcard-title{ font-size:18px; font-weight:600; margin-bottom:4px; }
+  .rcard-sub{ font-size:12.5px; color:var(--ink-soft); margin-bottom:12px; }
+  .attr-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .attr-pill{
+    font-size:11px; font-weight:800;
+    padding:5px 10px;
+    border-radius:20px;
+    background:rgba(207,234,81,1);
+    color:var(--ink);
+  }
+  .attr-pill:nth-child(2n){ background:rgba(236,200,231,1); color:var(--ink); }
+  .stat-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .stat-pill{
+    font-size:11.5px; font-weight:700;
+    padding:6px 11px;
+    border-radius:20px;
+    display:flex; align-items:center; gap:5px;
+  }
+  .stat-pill.lime{ background:var(--lime); }
+  .stat-pill.lav{ background:rgba(179, 218, 254, 1); }
+  .stat-pill.peach{ background:var(--peach); }
+
+  .card-macro-row{
+    display:flex; justify-content:space-between;
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px dashed rgba(38,34,26,0.2);
+  }
+  .card-macro-row div{ text-align:left; }
+  .card-macro-row b{ display:block; font-size:14px; font-weight:800; color:var(--ink); }
+  .card-macro-row span{ font-size:10.5px; color:var(--ink-soft); font-weight:700; }
+
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+    font-size:14px;
+  }
+  .empty-state .em{ font-size:38px; display:block; margin-bottom:10px; }
+
+  /* ---------------- BOTTOM NAV ---------------- */
+  .bottomnav{
+    position:absolute; left:16px; right:16px; bottom:16px;
+    background:var(--nav-dark);
+    border-radius:26px;
+    display:flex;
+    justify-content:space-around;
+    padding:12px 8px;
+    box-shadow:0 12px 28px rgba(0,0,0,0.3);
+  }
+  .nav-item{
+    background:none; border:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    color:rgba(255,255,255,0.5);
+    font-family:'Nunito', sans-serif;
+    font-size:10px; font-weight:700;
+    transition:color .2s;
+  }
+  .nav-item .ic{
+    width:26px; height:26px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px;
+  }
+  .nav-item.active{ color:#fff; }
+  .nav-item.active .ic{ background:var(--lime); color:var(--ink); }
+
+  .toast{
+    position:absolute; left:50%; bottom:92px;
+    transform:translate(-50%, 10px);
+    background:var(--ink); color:#fff;
+    padding:10px 18px; border-radius:20px;
+    font-size:12.5px; font-weight:700;
+    opacity:0; pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+    white-space:nowrap;
+    z-index:40;
+  }
+  .toast.show{ opacity:1; transform:translate(-50%, 0); }
+
+  /* ---------------- DETAIL SCREEN ---------------- */
+  .detail-screen{
+    position:absolute; inset:0;
+    background:linear-gradient(165deg, #F3DCEF 0%, #E9D0EE 45%, #DCC7EC 100%);
+    border-radius:36px;
+    display:none;
+    flex-direction:column;
+    overflow-y:auto;
+    z-index:30;
+  }
+  .detail-screen.active{ display:flex; }
+  .detail-top{
+    padding:22px 22px 0;
+    display:flex; justify-content:space-between; align-items:flex-start;
+  }
+  .round-btn{
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(255,255,255,0.75);
+    border:none; cursor:pointer; font-size:15px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .round-btn.liked{ background:var(--berry); color:#fff; }
+
+  .detail-photo{
+    margin:10px 22px 0;
+    height:230px;
+    border-radius:26px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:120px;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5), transparent 55%),
+      linear-gradient(135deg, var(--swatch-a,#DCEA7B), var(--swatch-b,#F5C99A));
+  }
+
+  .detail-body{ padding:22px 22px 130px; }
+  .detail-title{ font-size:26px; font-weight:600; line-height:1.15; margin-bottom:8px; }
+  .detail-title .kcal{ color:var(--berry); }
+  .detail-sub{ font-size:13.5px; color:var(--ink-soft); margin-bottom:22px; line-height:1.5; }
+
+  .macro-table{
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    border:1.5px solid var(--ink);
+    border-radius:14px;
+    overflow:hidden;
+    margin-bottom:28px;
+  }
+  .macro-cell{
+    padding:12px 6px;
+    text-align:center;
+    border-right:1.5px solid var(--ink);
+  }
+  .macro-cell:last-child{ border-right:none; }
+  .macro-cell .label{ font-size:11px; color:var(--ink-soft); font-weight:700; text-transform:lowercase; }
+  .macro-cell .val{ font-size:18px; font-weight:700; margin-top:2px; }
+
+  .section-label{ font-size:15px; font-weight:700; margin-bottom:14px; }
+
+  .servings-row{
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:14px;
+    font-weight:700; font-size:13px;
+  }
+  .stepper-btn{
+    width:28px; height:28px; border-radius:50%;
+    border:1.5px solid var(--ink);
+    background:#fff; cursor:pointer;
+    font-size:15px; line-height:1;
+  }
+
+  .ingredients{ list-style:none; margin-bottom:26px; }
+  .ingredients li{
+    display:flex; justify-content:space-between; gap:10px;
+    font-size:13.5px;
+    padding:10px 0;
+    border-bottom:1px dashed rgba(38,34,26,0.2);
+  }
+  .ingredients li .amt{ font-weight:800; white-space:nowrap; }
+
+  .steps{ list-style:none; }
+  .steps li{
+    display:flex; gap:12px;
+    font-size:13.5px; line-height:1.55;
+    margin-bottom:16px;
+  }
+  .step-num{
+    width:24px; height:24px; min-width:24px; border-radius:50%;
+    background:var(--ink); color:#fff;
+    font-size:11px; font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ---------------- SAVOURY SECTION (subtle) ---------------- */
+  .savoury-section{
+    margin-top:32px;
+    padding-top:20px;
+    border-top:1px solid rgba(38,34,26,0.1);
+  }
+  .savoury-heading{
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--ink-soft);
+    margin-bottom:12px;
+  }
+  .scard{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:rgba(255,255,255,0.4);
+    border-radius:14px;
+    padding:12px 14px;
+    margin-bottom:10px;
+    cursor:pointer;
+    transition:background .2s;
+  }
+  .scard:hover{ background:rgba(255,255,255,0.65); }
+  .scard-emoji{ font-size:28px; flex-shrink:0; }
+  .scard-info{ flex:1; min-width:0; }
+  .scard-title{ font-size:13px; font-weight:700; color:var(--ink); }
+  .scard-sub{ font-size:11px; color:var(--ink-soft); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .scard-kcal{ font-size:11.5px; font-weight:700; color:var(--ink-soft); flex-shrink:0; }
+
+  @media (max-width:460px){
+    body{ padding:0; }
+    .app{ border-radius:0; min-height:100vh; box-shadow:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="app-scroll" id="mainScreen">
+    <div class="topbar">
+      <div class="brand">Wicky <em>Eats</em></div>
+      <button class="icon-btn">🔖</button>
+    </div>
+    <p class="tagline">Sweet things that still fit the macros. High protein, low sugar, no regrets.</p>
+
+    <div class="cat-row" id="catRow"></div>
+
+    <div class="count-row">
+      <h2 id="countLabel">1 dessert</h2>
+      <div class="count-actions">
+        <button class="chip-btn active-toggle">▦</button>
+        <button class="chip-btn">⚙</button>
+      </div>
+    </div>
+
+    <div class="recipe-list" id="recipeList"></div>
+    <div class="savoury-section" id="savourySection"></div>
+  </div>
+
+  <div class="bottomnav">
+    <button class="nav-item active" data-tab="home"><span class="ic">🏠</span>home</button>
+    <button class="nav-item" data-tab="recipes"><span class="ic">🍰</span>recipes</button>
+    <button class="nav-item" data-tab="favorites"><span class="ic">♡</span>favorites</button>
+    <button class="nav-item" data-tab="profile"><span class="ic">☺</span>profile</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="detail-screen" id="detailScreen"></div>
+</div>
+
+<script>
+const recipes = [
+  {
+    id: "big-mac-bowl",
+    type: "savoury",
+    title: "Big Mac Burger Bowl",
+    subtitle: "All the flavours of a Big Mac — lean beef, pickles, and a lightened-up special sauce — without the bun",
+    emoji: "🍔",
+    swatchA: "#A6C98F",
+    swatchB: "#DCEA7B",
+    category: "mains",
+    badge: { icon: "💪", label: "High-Protein" },
+    attributes: [
+      { icon: "💪", label: "High-Protein" },
+      { icon: "🥗", label: "Low-Carb" }
+    ],
+    time: "15 mins",
+    baseServings: 1,
+    macros: { kcal: 450, protein: 45, carbs: 12, fat: 22 },
+    ingredients: [
+      { amount: 200, unit: "g", name: "lean beef mince (5% fat)" },
+      { amount: 0.5, unit: "tsp", name: "garlic powder" },
+      { amount: 0.5, unit: "tsp", name: "onion powder" },
+      { amount: 0.5, unit: "tsp", name: "smoked paprika" },
+      { amount: 1, unit: "pinch", name: "salt & pepper" },
+      { amount: 2, unit: "large", name: "lettuce leaves, shredded" },
+      { amount: 1, unit: "medium", name: "tomato, diced" },
+      { amount: 4, unit: "slices", name: "pickles" },
+      { amount: 0.25, unit: "small", name: "white onion, finely diced" },
+      { amount: 1, unit: "slice", name: "reduced-fat cheddar" },
+      { amount: 3, unit: "tbsp", name: "0% Greek yoghurt (sauce base)" },
+      { amount: 1, unit: "tsp", name: "American mustard" },
+      { amount: 1, unit: "tsp", name: "low-sugar ketchup" },
+      { amount: 1, unit: "tsp", name: "pickle juice" },
+      { amount: 0.5, unit: "tsp", name: "white wine vinegar" },
+      { amount: 1, unit: "pinch", name: "sesame seeds (optional, for garnish)" }
+    ],
+    steps: [
+      "Mix Greek yoghurt, mustard, ketchup, pickle juice, vinegar, a pinch of garlic powder, and onion powder. Stir well and refrigerate while you cook.",
+      "Season the beef mince with garlic powder, onion powder, smoked paprika, salt, and pepper.",
+      "Cook the mince in a non-stick pan over high heat for 6–8 minutes, breaking it up as it browns. Drain any excess fat.",
+      "Add the cheddar slice over the hot mince and let it melt for 1 minute.",
+      "Build your bowl: start with a bed of shredded lettuce, then add the cheesy mince on top.",
+      "Top with diced tomato, onion, and pickles.",
+      "Drizzle the special sauce generously over everything.",
+      "Finish with a pinch of sesame seeds if using and serve immediately."
+    ],
+    notes: "Swap cheddar for dairy-free alternative if needed. Add rice for extra carbs."
+  },
+  {
+    id: "cinnamon-rolls",
+    type: "dessert",
+    title: "High Protein Cinnamon Rolls",
+    subtitle: "Fluffy Greek yoghurt buns with brown stevia & cinnamon filling, topped with a protein cream cheese frosting",
+    emoji: "🥐",
+    swatchA: "#F5C99A",
+    swatchB: "#E8A87C",
+    category: "baked",
+    badge: { icon: "🔥", label: "Baked" },
+    attributes: [
+      { icon: "💪", label: "High-Protein" },
+      { icon: "🍬", label: "Low-Sugar" }
+    ],
+    time: "25-30 mins",
+    baseServings: 1,
+    macros: { kcal: 308, protein: 20, carbs: 39, fat: 7 },
+    ingredients: [
+      { amount: 300, unit: "g", name: "bread flour" },
+      { amount: 1.5, unit: "tsp", name: "baking powder" },
+      { amount: 0.5, unit: "tsp", name: "baking soda" },
+      { amount: 50, unit: "g", name: "0 cal sugar alternative" },
+      { amount: 1, unit: "pinch", name: "salt" },
+      { amount: 400, unit: "g", name: "0% Greek yoghurt" },
+      { amount: 1, unit: null, name: "egg yolk (for brushing)" },
+      { amount: 30, unit: "g", name: "light butter (for filling)" },
+      { amount: 40, unit: "g", name: "brown stevia (for filling)" },
+      { amount: 1, unit: "dusting", name: "cinnamon" },
+      { amount: 15, unit: "g", name: "light butter (to grease dish)" },
+      { amount: 45, unit: "g", name: "light cream cheese (Philadelphia) — frosting" },
+      { amount: 45, unit: "g", name: "protein powder, unflavoured or vanilla — frosting" },
+      { amount: 1, unit: "tsp", name: "vanilla extract — frosting" },
+      { amount: 1, unit: "to taste", name: "sweetener — frosting" },
+      { amount: 1, unit: "splash", name: "water (add slowly for consistency) — frosting" }
+    ],
+    steps: [
+      "Mix bread flour, baking powder, baking soda, sugar alternative, and salt in a large bowl.",
+      "Add Greek yoghurt and stir until a soft dough forms. It will be slightly sticky — that's normal.",
+      "Turn out onto a lightly floured surface and knead briefly until smooth.",
+      "Roll the dough into a rectangle roughly 30×20 cm.",
+      "Melt 30g light butter and brush over the dough. Sprinkle with brown stevia and a generous dusting of cinnamon.",
+      "Roll the dough tightly from the long edge, then slice into equal buns.",
+      "Grease a baking dish with the 15g light butter and place buns inside, slightly apart.",
+      "Brush the tops with egg yolk for a golden finish.",
+      "Bake at 180°C / 375°F for 25–30 minutes until golden.",
+      "Make the frosting: beat together cream cheese, protein powder, vanilla extract, and sweetener. Add water slowly until it reaches a thick drip consistency.",
+      "Drizzle frosting over warm buns and serve."
+    ],
+    notes: "Per bun: 308 kcal | 20g protein | 39g carbs | 7g fat"
+  },
+  {
+    id: "lemon-tiramisu",
+    type: "dessert",
+    title: "Lemon Tiramisu",
+    subtitle: "Bright, creamy, no-bake lemon dessert layered with skyr and lemon curd",
+    emoji: "🍋",
+    swatchA: "#DCEA7B",
+    swatchB: "#F5C99A",
+    category: "no-bake",
+    badge: { icon: "🌙", label: "No-Bake" },
+    attributes: [
+      { icon: "💪", label: "High-Protein" },
+      { icon: "🍬", label: "Low-Sugar" }
+    ],
+    time: "10 mins",
+    baseServings: 1,
+    macros: { kcal: 281, protein: 26, carbs: 39, fat: 2 },
+    ingredients: [
+      { amount: 200, unit: "g", name: "skyr" },
+      { amount: 1, unit: "tbsp", name: "sweetener of choice (sugar-free vanilla syrup used here)" },
+      { amount: 1, unit: "pinch", name: "lemon zest" },
+      { amount: 4, unit: null, name: "ladyfingers" },
+      { amount: 3, unit: "tbsp", name: "milk, for soaking" },
+      { amount: 3, unit: "tbsp", name: "zero-sugar lemon curd, for topping" }
+    ],
+    steps: [
+      "Stir the skyr with the sweetener and a bit of lemon zest until smooth.",
+      "Briefly dip two ladyfingers in milk and place them in a serving dish.",
+      "Spread half of the skyr cream on top of the ladyfingers.",
+      "Dip the remaining two ladyfingers in milk and place them on the cream layer.",
+      "Finish with the remaining skyr cream, spreading it evenly.",
+      "Top with zero-sugar lemon curd and chill well in the fridge before eating."
+    ],
+    notes: "Source: @anarated"
+  }
+];
+
+const categories = [
+  { id: "all", label: "All", icon: "✨" },
+  { id: "no-bake", label: "No-Bake", icon: "🌙" },
+  { id: "baked", label: "Baked", icon: "🔥" },
+  { id: "frozen", label: "Frozen", icon: "❄️" },
+  { id: "mousse", label: "Mousse", icon: "🥣" }
+];
+
+let activeCategory = "all";
+let currentServings = {};
+let likedRecipes = {};
+
+const catRow = document.getElementById('catRow');
+function renderCategories(){
+  catRow.innerHTML = categories.map(c => `
+    <button class="cat ${c.id === activeCategory ? 'active' : ''}" data-cat="${c.id}">
+      <span class="cat-circle">${c.icon}</span>
+      <span class="cat-label">${c.label}</span>
+    </button>
+  `).join('');
+  catRow.querySelectorAll('.cat').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCategory = btn.dataset.cat;
+      renderCategories();
+      renderList();
+    });
+  });
+}
+
+const recipeList = document.getElementById('recipeList');
+const countLabel = document.getElementById('countLabel');
+
+function filteredRecipes(){
+  const desserts = recipes.filter(r => r.type !== 'savoury');
+  return activeCategory === 'all' ? desserts : desserts.filter(r => r.category === activeCategory);
+}
+
+function renderList(){
+  const list = filteredRecipes();
+  countLabel.textContent = `${list.length} dessert${list.length === 1 ? '' : 's'}`;
+
+  if(list.length === 0){
+    recipeList.innerHTML = `
+      <div class="empty-state">
+        <span class="em">🍽️</span>
+        Nothing filed under this category yet — more recipes coming soon.
+      </div>`;
+    return;
+  }
+
+  recipeList.innerHTML = list.map(r => `
+    <div class="rcard" data-id="${r.id}" style="--swatch-a:${r.swatchA}; --swatch-b:${r.swatchB};">
+      <div class="rcard-photo">
+        <span class="rcard-badge">${r.badge.icon} ${r.badge.label}</span>
+        ${r.emoji}
+      </div>
+      <div class="rcard-body">
+        <div class="rcard-title">${r.title}</div>
+        <div class="rcard-sub">${r.subtitle}</div>
+        <div class="attr-row">
+          ${r.attributes.map(a => `<span class="attr-pill">${a.icon} ${a.label}</span>`).join('')}
+        </div>
+        <div class="stat-row">
+          <span class="stat-pill lav">🕐 ${r.time}</span>
+        </div>
+        <div class="card-macro-row">
+          <div><b>${r.macros.kcal}</b><span>kcal</span></div>
+          <div><b>${r.macros.protein}g</b><span>protein</span></div>
+          <div><b>${r.macros.carbs}g</b><span>carbs</span></div>
+          <div><b>${r.macros.fat}g</b><span>fat</span></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  recipeList.querySelectorAll('.rcard').forEach(card => {
+    card.addEventListener('click', () => openDetail(card.dataset.id));
+  });
+
+  renderSavoury();
+}
+
+const savourySection = document.getElementById('savourySection');
+function renderSavoury(){
+  const savoury = recipes.filter(r => r.type === 'savoury');
+  if(savoury.length === 0){ savourySection.innerHTML = ''; return; }
+  savourySection.innerHTML = `
+    <div class="savoury-heading">Savoury Recipes</div>
+    ${savoury.map(r => `
+      <div class="scard" data-id="${r.id}">
+        <span class="scard-emoji">${r.emoji}</span>
+        <div class="scard-info">
+          <div class="scard-title">${r.title}</div>
+          <div class="scard-sub">${r.subtitle}</div>
+        </div>
+        <span class="scard-kcal">${r.macros.kcal} kcal</span>
+      </div>
+    `).join('')}
+  `;
+  savourySection.querySelectorAll('.scard').forEach(card => {
+    card.addEventListener('click', () => openDetail(card.dataset.id));
+  });
+}
+
+const detailScreen = document.getElementById('detailScreen');
+
+function scaleAmount(amount, base, servings){
+  const val = (amount / base) * servings;
+  return Math.round(val * 10) / 10;
+}
+
+function openDetail(id){
+  const r = recipes.find(x => x.id === id);
+  if(!r) return;
+  if(!currentServings[id]) currentServings[id] = r.baseServings;
+  renderDetail(r);
+  detailScreen.classList.add('active');
+}
+
+function closeDetail(){
+  detailScreen.classList.remove('active');
+}
+window.closeDetail = closeDetail;
+
+function toggleLike(id){
+  likedRecipes[id] = !likedRecipes[id];
+  const r = recipes.find(x => x.id === id);
+  renderDetail(r);
+}
+window.toggleLike = toggleLike;
+
+function adjustServings(id, delta){
+  currentServings[id] = Math.max(1, (currentServings[id] || 1) + delta);
+  const r = recipes.find(x => x.id === id);
+  renderDetail(r);
+}
+window.adjustServings = adjustServings;
+
+function renderDetail(r){
+  const servings = currentServings[r.id];
+  const liked = !!likedRecipes[r.id];
+
+  detailScreen.innerHTML = `
+    <div class="detail-top">
+      <button class="round-btn" onclick="closeDetail()">←</button>
+      <button class="round-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${r.id}')">${liked ? '♥' : '♡'}</button>
+    </div>
+    <div class="detail-photo" style="--swatch-a:${r.swatchA}; --swatch-b:${r.swatchB};">${r.emoji}</div>
+    <div class="detail-body">
+      <div class="detail-title">${r.title}, <span class="kcal">${r.macros.kcal} Kcal</span></div>
+      <div class="detail-sub">${r.subtitle}</div>
+      <div class="attr-row">
+        ${r.attributes.map(a => `<span class="attr-pill">${a.icon} ${a.label}</span>`).join('')}
+      </div>
+
+      <div class="macro-table">
+        <div class="macro-cell"><div class="label">protein</div><div class="val">${r.macros.protein}g</div></div>
+        <div class="macro-cell"><div class="label">fat</div><div class="val">${r.macros.fat}g</div></div>
+        <div class="macro-cell"><div class="label">carbs</div><div class="val">${r.macros.carbs}g</div></div>
+      </div>
+
+      <div class="section-label">Ingredients</div>
+      <div class="servings-row">
+        <button class="stepper-btn" onclick="adjustServings('${r.id}', -1)">–</button>
+        <span>${servings} serving${servings === 1 ? '' : 's'}</span>
+        <button class="stepper-btn" onclick="adjustServings('${r.id}', 1)">+</button>
+      </div>
+      <ul class="ingredients">
+        ${r.ingredients.map(ing => {
+          const scaled = scaleAmount(ing.amount, r.baseServings, servings);
+          const amtStr = ing.unit ? `${scaled} ${ing.unit}` : `${scaled}`;
+          return `<li><span>${ing.name}</span><span class="amt">${amtStr}</span></li>`;
+        }).join('')}
+      </ul>
+
+      <div class="section-label">Instructions</div>
+      <ol class="steps">
+        ${r.steps.map((s,i) => `<li><span class="step-num">${i+1}</span><span>${s}</span></li>`).join('')}
+      </ol>
+    </div>
+  `;
+}
+
+const toast = document.getElementById('toast');
+let toastTimer;
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 1600);
+}
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    if(tab === 'home' || tab === 'recipes'){
+      closeDetail();
+      document.getElementById('mainScreen').scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      showToast(tab === 'favorites' ? 'Favorites — coming soon' : 'Profile — coming soon');
+    }
+  });
+});
+
+renderCategories();
+renderList();
+</script>
+
+</body>
+</html>
