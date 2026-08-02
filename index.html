@@ -600,9 +600,6 @@ function renderList(){
       <div class="rcard-body">
         <div class="rcard-title">${r.title}</div>
         <div class="rcard-sub">${r.subtitle}</div>
-        <div class="attr-row">
-          ${r.attributes.map(a => `<span class="attr-pill">${a.icon} ${a.label}</span>`).join('')}
-        </div>
         <div class="stat-row">
           <span class="stat-pill lav">🕐 ${r.time}</span>
         </div>
@@ -692,10 +689,6 @@ function renderDetail(r){
     <div class="detail-body">
       <div class="detail-title">${r.title}, <span class="kcal">${r.macros.kcal} Kcal</span></div>
       <div class="detail-sub">${r.subtitle}</div>
-      <div class="attr-row">
-        ${r.attributes.map(a => `<span class="attr-pill">${a.icon} ${a.label}</span>`).join('')}
-      </div>
-
       <div class="macro-table">
         <div class="macro-cell"><div class="label">protein</div><div class="val">${r.macros.protein}g</div></div>
         <div class="macro-cell"><div class="label">fat</div><div class="val">${r.macros.fat}g</div></div>
