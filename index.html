@@ -250,6 +250,36 @@
         "40g light cream cheese",
         "30g vanilla protein powder"
       ]
+    },
+    {
+      "@type": "Recipe",
+      "name": "Cottage Cheese Queso Dip",
+      "description": "A creamy, high-protein queso dip made with blended cottage cheese and melty cheddar. 420 kcal, 48g protein per serving. Ready in 10 minutes.",
+      "image": "cottage-cheese-queso-dip.jpg",
+      "keywords": "cottage cheese queso dip, high protein queso, healthy queso dip, protein dip recipe, high protein snack, fat loss snack, low carb dip, busy women snack, guilt free queso",
+      "prepTime": "PT5M",
+      "cookTime": "PT5M",
+      "totalTime": "PT10M",
+      "recipeYield": "1 serving",
+      "recipeCategory": "Main Course",
+      "recipeCuisine": "Healthy",
+      "suitableForDiet": ["https://schema.org/LowCalorieDiet", "https://schema.org/HighProteinDiet", "https://schema.org/LowCarbohydrateDiet"],
+      "nutrition": {
+        "@type": "NutritionInformation",
+        "calories": "420 calories",
+        "proteinContent": "48g",
+        "carbohydrateContent": "14g",
+        "fatContent": "20g"
+      },
+      "recipeIngredient": [
+        "250g low-fat cottage cheese, blended smooth",
+        "100g reduced-fat cheddar, shredded",
+        "60g mild salsa",
+        "1 tsp taco seasoning",
+        "1 tbsp milk, to loosen",
+        "1 pinch salt, to taste",
+        "sliced jalapeño and chopped coriander, to garnish (optional)"
+      ]
     }
   ]
 }
@@ -969,6 +999,43 @@ const recipes = [
       "Serve immediately or refreeze for 30 minutes for a firmer scoop."
     ],
     notes: "Add an extra half tablespoon of Biscoff spread into the base for a stronger flavour. Re-spin if the texture looks crumbly after the first spin."
+  },
+  {
+    id: "cottage-cheese-queso-dip",
+    image: "cottage-cheese-queso-dip.jpg",
+    type: "savoury",
+    title: "Cottage Cheese Queso Dip",
+    subtitle: "A creamy, high-protein queso made from blended cottage cheese and melty cheddar — no processed cheese block needed",
+    emoji: "🧀",
+    swatchA: "#F5C99A",
+    swatchB: "#E8778F",
+    category: "mains",
+    badge: { icon: "💪", label: "High-Protein" },
+    attributes: [
+      { icon: "💪", label: "High-Protein" },
+      { icon: "🌶️", label: "Spicy" }
+    ],
+    time: "10 mins",
+    baseServings: 1,
+    macros: { kcal: 420, protein: 48, carbs: 14, fat: 20 },
+    ingredients: [
+      { amount: 250, unit: "g", name: "low-fat cottage cheese, blended smooth" },
+      { amount: 100, unit: "g", name: "reduced-fat cheddar, shredded" },
+      { amount: 60, unit: "g", name: "mild salsa" },
+      { amount: 1, unit: "tsp", name: "taco seasoning (or chilli powder + cumin + garlic powder)" },
+      { amount: 1, unit: "tbsp", name: "milk, to loosen (add more if needed)" },
+      { amount: 1, unit: "pinch", name: "salt, to taste" },
+      { amount: 1, unit: "optional", name: "sliced jalapeño and chopped coriander, to garnish" }
+    ],
+    steps: [
+      "Blend the cottage cheese in a small blender or food processor until completely smooth and creamy.",
+      "Add the blended cottage cheese, shredded cheddar, salsa, and taco seasoning to a small saucepan over low-medium heat.",
+      "Stir constantly for 3–4 minutes until the cheese melts and the mixture turns smooth and glossy.",
+      "Add milk a splash at a time until the dip reaches your preferred consistency.",
+      "Taste and season with a pinch of salt if needed.",
+      "Transfer to a bowl, top with jalapeño and coriander if using, and serve warm with veggies, protein crisps, or low-carb tortilla chips."
+    ],
+    notes: "Reheats well — warm gently on the stove or microwave in 15-second bursts, stirring between each, if it firms up in the fridge."
   }
 ];
 
