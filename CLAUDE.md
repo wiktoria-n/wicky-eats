@@ -27,3 +27,45 @@ Everything is in `index.html`:
 ## Adding Recipes
 
 Add an object to the `recipes` array. Use `type: "dessert"` and set `category` to `"cold"` or `"pastry"` for the category filter to work. Use `type: "savoury"` to appear in the savoury section only. Images go in the repo root and are referenced by filename in the `image` field. Use `ingredientSections` (array of `{ label, items }`) instead of `ingredients` when grouping is needed.
+
+## SEO Checklist for Every New Recipe
+
+Every recipe needs two things to be SEO-friendly:
+
+### 1. Image (critical — required for Google rich results)
+- Add a real food photo to the repo root (e.g. `my-recipe.jpg`)
+- Reference it in the recipe object: `image: "my-recipe.jpg"`
+- Without an image, Google marks the recipe as **ineligible** for rich results — it will not appear as a recipe card in search
+
+### 2. JSON-LD structured data (in the `<head>`)
+Add a new `Recipe` object inside the `@graph` array in the `<script type="application/ld+json">` block. Required fields:
+
+```json
+{
+  "@type": "Recipe",
+  "name": "Recipe Name",
+  "description": "One sentence — include kcal and protein count. Keep it search-friendly.",
+  "image": "filename.jpg",
+  "keywords": "comma-separated search terms — include ingredient-specific terms (e.g. 'cottage cheese pizza'), health goal terms ('fat loss', 'high protein'), and audience terms ('busy women', 'women over 30')",
+  "prepTime": "PT10M",
+  "cookTime": "PT20M",
+  "totalTime": "PT30M",
+  "recipeYield": "1 serving",
+  "recipeCategory": "Dessert or Main Course",
+  "recipeCuisine": "Healthy Baking / Healthy No-Bake / Healthy",
+  "suitableForDiet": ["https://schema.org/LowCalorieDiet", "https://schema.org/HighProteinDiet"],
+  "nutrition": {
+    "@type": "NutritionInformation",
+    "calories": "X calories",
+    "proteinContent": "Xg",
+    "carbohydrateContent": "Xg",
+    "fatContent": "Xg"
+  },
+  "recipeIngredient": ["list", "of", "ingredients"]
+}
+```
+
+> Always use `https://schema.org/` (not `http://`) for `suitableForDiet` values.
+
+### Validate after adding
+Test at `search.google.com/test/rich-results` with the live URL. All recipes should show `check_circle` with no critical issues.
