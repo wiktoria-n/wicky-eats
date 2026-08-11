@@ -20,10 +20,9 @@ To work on the API/admin form locally: `npm install`, then `npm test` to run the
 - **JavaScript**: No frameworks. All state is in plain variables. Key pieces:
   - `recipes[]` — a JS array between the `/* RECIPES_START */` / `/* RECIPES_END */` markers. **This block is generated — don't hand-edit it or the JSON-LD `@graph` array; edit `recipes.json` instead and regenerate (see below).** Each recipe has `type` (`"dessert"` or `"savoury"`), `category` (`"cold"` or `"pastry"`), macros, and either `ingredients[]` (flat) or `ingredientSections[]` (grouped).
   - `renderList()` / `renderCategories()` — rebuild the main screen DOM from the filtered recipe list. Savoury recipes are always shown in a separate subtle section below, never filtered by category.
-  - `openDetail(id)` / `renderDetail(r)` — show the detail overlay by injecting HTML into `#detailScreen`.
+  - `openDetail(id)` / `renderDetail(r)` — show the detail overlay by injecting HTML into `#detailScreen`, then wires up its buttons (`.detail-close`, `.detail-like`, `.servings-dec`/`.servings-inc`) via `addEventListener`. Recipe-derived values are escaped with `escapeHtml()` before being interpolated into the HTML string — never interpolate new recipe fields into `innerHTML` (or into inline event-handler attributes, which `escapeHtml()` alone can't make safe) without it.
   - `adjustServings(id, delta)` — scales ingredient amounts proportionally via `scaleAmount()` and re-renders the detail view.
   - `toggleLike(id)` — toggled in-memory only (not persisted).
-  - `closeDetail`, `toggleLike`, `adjustServings` are exposed on `window` because detail HTML is injected as strings with inline `onclick` handlers.
 
 ### Recipe data (`recipes.json`)
 The source of truth for every recipe — both the display fields used by the app and the `seo` fields (description, keywords, prep/cook/total time, diet types, search-friendly ingredient list) used for JSON-LD structured data. `index.html`'s `recipes[]` block and its JSON-LD `Recipe` entries are both *generated* from this file — see `netlify/functions/lib/generateHtml.js`. The JSON-LD `nutrition` block is derived automatically from each recipe's `macros`, so it isn't stored separately.
