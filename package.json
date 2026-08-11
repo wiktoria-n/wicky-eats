@@ -1,0 +1,28 @@
+{
+  "name": "wicky-eats",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wicky Eats recipe book — static site plus a Netlify Functions API for adding recipes.",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wiktoria-n/wicky-eats.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wiktoria-n/wicky-eats/issues"
+  },
+  "homepage": "https://github.com/wiktoria-n/wicky-eats#readme",
+  "dependencies": {
+    "@octokit/rest": "^22.0.1",
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.10"
+  }
+}

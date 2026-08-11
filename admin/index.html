@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Wicky Eats — Add Recipe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#26221A; --ink-soft:#5c5748; --cream:#FFFDF7; --lime:#DCEA7B; --line:rgba(38,34,26,0.15); --berry:#E8778F; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+    background:#EDE6D6;
+    min-height:100vh;
+    padding:32px 16px 80px;
+  }
+  .wrap{ max-width:640px; margin:0 auto; }
+  .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; }
+  h1{ font-family:'Fredoka', sans-serif; font-size:24px; }
+  #logoutBtn{ background:none; border:1.5px solid var(--line); border-radius:20px; padding:8px 16px; font-family:inherit; font-weight:700; font-size:12.5px; cursor:pointer; }
+  form{ background:var(--cream); border-radius:24px; padding:28px; box-shadow:0 20px 50px rgba(38,34,26,0.1); }
+  fieldset{ border:none; margin-bottom:28px; padding:0; }
+  legend{ font-family:'Fredoka', sans-serif; font-size:16px; margin-bottom:14px; padding:0; }
+  .row{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+  .field{ flex:1; min-width:160px; }
+  .field.full{ flex-basis:100%; }
+  label{ font-size:12px; font-weight:700; display:block; margin-bottom:6px; }
+  label .hint{ font-weight:400; color:var(--ink-soft); }
+  input, select, textarea{
+    width:100%; padding:10px 12px; border-radius:10px;
+    border:1.5px solid var(--line); font-size:13.5px; font-family:inherit; background:#fff;
+  }
+  textarea{ resize:vertical; min-height:80px; font-family:'Courier New', monospace; font-size:12.5px; }
+  .checkbox-row{ display:flex; align-items:center; gap:8px; margin-top:10px; }
+  .checkbox-row input{ width:auto; }
+  button[type="submit"]{
+    width:100%; padding:14px; border-radius:12px; border:none;
+    background:var(--ink); color:#fff; font-family:inherit; font-weight:700; font-size:14.5px; cursor:pointer;
+  }
+  button[type="submit"]:disabled{ opacity:0.6; }
+  .msg{ margin-top:16px; padding:12px 14px; border-radius:12px; font-size:13px; display:none; }
+  .msg.error{ background:#fbe4e8; color:#8a2438; display:block; }
+  .msg.success{ background:#e6f2d8; color:#3c5a24; display:block; }
+  .msg ul{ margin:6px 0 0 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <h1>Add a Recipe</h1>
+    <button id="logoutBtn" type="button">Log out</button>
+  </div>
+
+  <form id="recipeForm">
+    <fieldset>
+      <legend>Basics</legend>
+      <div class="row">
+        <div class="field"><label>ID <span class="hint">(lowercase-hyphenated, unique)</span></label><input name="id" required pattern="[a-z0-9-]+"></div>
+        <div class="field"><label>Type</label>
+          <select name="type" id="type">
+            <option value="dessert">dessert</option>
+            <option value="savoury">savoury</option>
+          </select>
+        </div>
+        <div class="field"><label>Category</label>
+          <select name="category" id="category">
+            <option value="cold">cold</option>
+            <option value="pastry">pastry</option>
+            <option value="mains">mains</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field full"><label>Title</label><input name="title" required></div>
+      </div>
+      <div class="row">
+        <div class="field full"><label>Subtitle</label><input name="subtitle" required></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Emoji</label><input name="emoji" required></div>
+        <div class="field"><label>Swatch A</label><input type="color" name="swatchA" value="#dcea7b"></div>
+        <div class="field"><label>Swatch B</label><input type="color" name="swatchB" value="#f5c99a"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Badge icon</label><input name="badgeIcon" value="💪"></div>
+        <div class="field"><label>Badge label</label><input name="badgeLabel" value="High-Protein"></div>
+        <div class="field"><label>Time <span class="hint">(e.g. "10 mins")</span></label><input name="time" required></div>
+        <div class="field"><label>Base servings</label><input type="number" name="baseServings" value="1" min="1"></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Macros (per serving)</legend>
+      <div class="row">
+        <div class="field"><label>Kcal</label><input type="number" name="kcal" required></div>
+        <div class="field"><label>Protein (g)</label><input type="number" name="protein" required></div>
+        <div class="field"><label>Carbs (g)</label><input type="number" name="carbs" required></div>
+        <div class="field"><label>Fat (g)</label><input type="number" name="fat" required></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Ingredients</legend>
+      <label>One per line: <span class="hint">amount|unit|name</span> — leave unit blank for none. Start a line with <span class="hint">## Section Name</span> to group ingredients into sections.</label>
+      <textarea name="ingredientsRaw" required placeholder="## Base&#10;250|g|low-fat cottage cheese&#10;2||eggs&#10;1|tsp|garlic powder"></textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend>Steps</legend>
+      <label>One instruction per line</label>
+      <textarea name="stepsRaw" required placeholder="Preheat oven to 200°C.&#10;Mix everything together."></textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend>Notes <span class="hint">(optional)</span></legend>
+      <textarea name="notes" style="min-height:50px"></textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend>Photo</legend>
+      <label>Image file <span class="hint">(filename becomes the URL — lowercase-hyphenated, e.g. my-recipe.jpg)</span></label>
+      <input type="file" name="imageFile" accept="image/*" required>
+    </fieldset>
+
+    <fieldset>
+      <legend>SEO</legend>
+      <div class="row">
+        <div class="field full"><label>Description <span class="hint">(one sentence, include kcal + protein)</span></label><textarea name="description" style="min-height:50px" required></textarea></div>
+      </div>
+      <div class="row">
+        <div class="field full"><label>Keywords <span class="hint">(comma-separated)</span></label><input name="keywords" required></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Prep time <span class="hint">(PT10M)</span></label><input name="prepTime" required></div>
+        <div class="field"><label>Cook time <span class="hint">(optional)</span></label><input name="cookTime"></div>
+        <div class="field"><label>Total time</label><input name="totalTime" required></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Recipe category</label>
+          <select name="recipeCategory"><option>Dessert</option><option>Main Course</option></select>
+        </div>
+        <div class="field"><label>Recipe cuisine</label><input name="recipeCuisine" placeholder="Healthy" required></div>
+      </div>
+      <div class="row">
+        <div class="field full"><label>Suitable for diet <span class="hint">(one schema.org URL per line)</span></label>
+          <textarea name="suitableForDietRaw" style="min-height:50px" required>https://schema.org/LowCalorieDiet
+https://schema.org/HighProteinDiet</textarea>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field full"><label>Recipe ingredient list <span class="hint">(search-friendly, one per line)</span></label>
+          <textarea name="recipeIngredientRaw" required placeholder="250g low-fat cottage cheese&#10;2 eggs"></textarea>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="dryRun" name="dryRun">
+      <label for="dryRun" style="margin:0;">Dry run (validate only, don't commit)</label>
+    </div>
+
+    <div class="msg" id="msg"></div>
+    <br>
+    <button type="submit" id="submitBtn">Add Recipe</button>
+  </form>
+</div>
+
+<script>
+  (async () => {
+    const res = await fetch('/api/session', { credentials: 'include' });
+    const data = await res.json().catch(() => ({ authenticated: false }));
+    if (!data.authenticated) window.location.href = '/admin/login.html';
+  })();
+
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+    window.location.href = '/admin/login.html';
+  });
+
+  function parseLines(raw) {
+    return raw.split('\n').map((l) => l.trim()).filter(Boolean);
+  }
+
+  function parseIngredients(raw) {
+    const lines = parseLines(raw);
+    const toItem = (line) => {
+      const [amount, unit, ...nameParts] = line.split('|');
+      return { amount: Number(amount), unit: unit ? unit.trim() : null, name: nameParts.join('|').trim() };
+    };
+    const hasSections = lines.some((l) => l.startsWith('## '));
+    if (!hasSections) return { ingredients: lines.map(toItem) };
+
+    const sections = [];
+    let current = null;
+    lines.forEach((line) => {
+      if (line.startsWith('## ')) {
+        current = { label: line.slice(3).trim(), items: [] };
+        sections.push(current);
+      } else if (current) {
+        current.items.push(toItem(line));
+      }
+    });
+    return { ingredientSections: sections };
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  const form = document.getElementById('recipeForm');
+  const msgEl = document.getElementById('msg');
+  const submitBtn = document.getElementById('submitBtn');
+  const typeSelect = document.getElementById('type');
+  const categorySelect = document.getElementById('category');
+
+  function syncCategoryToType() {
+    if (typeSelect.value === 'savoury') {
+      categorySelect.value = 'mains';
+      categorySelect.disabled = true;
+    } else {
+      categorySelect.disabled = false;
+      if (categorySelect.value === 'mains') categorySelect.value = 'cold';
+    }
+  }
+  typeSelect.addEventListener('change', syncCategoryToType);
+  syncCategoryToType();
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msgEl.className = 'msg';
+    msgEl.textContent = '';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    try {
+      const fd = new FormData(form);
+      const imageFile = fd.get('imageFile');
+      const imageData = imageFile && imageFile.size ? await fileToBase64(imageFile) : null;
+
+      const payload = {
+        id: fd.get('id'),
+        title: fd.get('title'),
+        subtitle: fd.get('subtitle'),
+        type: fd.get('type'),
+        category: fd.get('type') === 'savoury' ? 'mains' : fd.get('category'),
+        emoji: fd.get('emoji'),
+        swatchA: fd.get('swatchA'),
+        swatchB: fd.get('swatchB'),
+        badge: { icon: fd.get('badgeIcon'), label: fd.get('badgeLabel') },
+        time: fd.get('time'),
+        baseServings: Number(fd.get('baseServings')) || 1,
+        macros: {
+          kcal: Number(fd.get('kcal')),
+          protein: Number(fd.get('protein')),
+          carbs: Number(fd.get('carbs')),
+          fat: Number(fd.get('fat'))
+        },
+        ...parseIngredients(fd.get('ingredientsRaw')),
+        steps: parseLines(fd.get('stepsRaw')),
+        notes: fd.get('notes') || undefined,
+        image: imageFile && imageFile.size ? { filename: imageFile.name, data: imageData } : undefined,
+        seo: {
+          description: fd.get('description'),
+          keywords: fd.get('keywords'),
+          prepTime: fd.get('prepTime'),
+          cookTime: fd.get('cookTime') || null,
+          totalTime: fd.get('totalTime'),
+          recipeYield: '1 serving',
+          recipeCategory: fd.get('recipeCategory'),
+          recipeCuisine: fd.get('recipeCuisine'),
+          suitableForDiet: parseLines(fd.get('suitableForDietRaw')),
+          recipeIngredient: parseLines(fd.get('recipeIngredientRaw'))
+        },
+        dryRun: fd.get('dryRun') === 'on'
+      };
+
+      const res = await fetch('/api/recipes', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.status === 401) {
+        window.location.href = '/admin/login.html';
+        return;
+      }
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        msgEl.className = 'msg error';
+        msgEl.innerHTML = 'Could not add recipe:' + (data.errors ? '<ul>' + data.errors.map((e) => `<li>${e}</li>`).join('') + '</ul>' : ` ${data.error || res.statusText}`);
+        return;
+      }
+
+      if (data.dryRun) {
+        msgEl.className = 'msg success';
+        msgEl.textContent = `Valid — would add "${data.id}" (${data.totalRecipes} recipes total). Nothing committed.`;
+      } else {
+        msgEl.className = 'msg success';
+        msgEl.innerHTML = `Recipe added! <a href="${data.commitUrl}" target="_blank" rel="noopener">View commit</a>.`;
+        form.reset();
+      }
+    } catch (err) {
+      msgEl.className = 'msg error';
+      msgEl.textContent = 'Network error — please try again.';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Add Recipe';
+    }
+  });
+</script>
+</body>
+</html>
