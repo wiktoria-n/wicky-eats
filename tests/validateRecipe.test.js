@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateRecipe } from '../netlify/functions/lib/validateRecipe.js';
 
-const existingRecipes = [{ id: 'existing-recipe' }];
+const existingRecipes = [{ id: 'existing-recipe', image: 'existing-recipe.jpg' }];
 
 function baseRecipe(overrides = {}) {
   return {
@@ -85,5 +85,19 @@ describe('validateRecipe', () => {
   it('rejects an image filename with uppercase or spaces', () => {
     const result = validateRecipe(baseRecipe({ image: { filename: 'My Recipe.jpg', data: 'ZmFrZQ==' } }), existingRecipes);
     expect(result.success).toBe(false);
+  });
+
+  it('rejects an image filename already used by a different existing recipe', () => {
+    const result = validateRecipe(
+      baseRecipe({ image: { filename: 'existing-recipe.jpg', data: 'ZmFrZQ==' } }),
+      existingRecipes
+    );
+    expect(result.success).toBe(false);
+    expect(result.errors.join()).toMatch(/already used by another recipe/);
+  });
+
+  it('accepts a fresh image filename not used by any existing recipe', () => {
+    const result = validateRecipe(baseRecipe({ image: { filename: 'brand-new.jpg', data: 'ZmFrZQ==' } }), existingRecipes);
+    expect(result.success).toBe(true);
   });
 });

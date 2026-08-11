@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getFile, commitFiles } from '../netlify/functions/lib/github.js';
+import { getFile, commitFiles, CommitConflictError } from '../netlify/functions/lib/github.js';
 
 function makeFakeClient() {
   return {
@@ -72,36 +72,36 @@ describe('github helper', () => {
     });
   });
 
-  it('retries once on a non-fast-forward ref conflict', async () => {
+  it('throws a CommitConflictError on a non-fast-forward ref conflict, without recommitting stale content', async () => {
     const client = makeFakeClient();
     client.git.getRef.mockResolvedValue({ data: { object: { sha: 'base-commit-sha' } } });
     client.git.getCommit.mockResolvedValue({ data: { tree: { sha: 'base-tree-sha' } } });
     client.git.createBlob.mockResolvedValue({ data: { sha: 'blob-sha' } });
     client.git.createTree.mockResolvedValue({ data: { sha: 'tree-sha' } });
     client.git.createCommit.mockResolvedValue({ data: { sha: 'commit-sha' } });
-    client.git.updateRef
-      .mockRejectedValueOnce({ status: 422, message: 'Update is not a fast forward' })
-      .mockResolvedValueOnce({});
-
-    const result = await commitFiles([{ path: 'recipes.json', content: '[]' }], 'Add recipe: Test', { client });
-
-    expect(client.git.updateRef).toHaveBeenCalledTimes(2);
-    expect(client.git.getRef).toHaveBeenCalledTimes(2);
-    expect(result.commitSha).toBe('commit-sha');
-  });
-
-  it('gives up after one retry and surfaces the error', async () => {
-    const client = makeFakeClient();
-    client.git.getRef.mockResolvedValue({ data: { object: { sha: 'base-commit-sha' } } });
-    client.git.getCommit.mockResolvedValue({ data: { tree: { sha: 'base-tree-sha' } } });
-    client.git.createBlob.mockResolvedValue({ data: { sha: 'blob-sha' } });
-    client.git.createTree.mockResolvedValue({ data: { sha: 'tree-sha' } });
-    client.git.createCommit.mockResolvedValue({ data: { sha: 'commit-sha' } });
-    client.git.updateRef.mockRejectedValue({ status: 422, message: 'still conflicting' });
+    client.git.updateRef.mockRejectedValue({ status: 422, message: 'Update is not a fast forward' });
 
     await expect(
       commitFiles([{ path: 'recipes.json', content: '[]' }], 'Add recipe: Test', { client })
-    ).rejects.toMatchObject({ status: 422 });
-    expect(client.git.updateRef).toHaveBeenCalledTimes(2);
+    ).rejects.toBeInstanceOf(CommitConflictError);
+
+    // No self-retry: it should have tried updateRef exactly once, never
+    // silently recommitting the same (potentially stale) files.
+    expect(client.git.updateRef).toHaveBeenCalledTimes(1);
+    expect(client.git.getRef).toHaveBeenCalledTimes(1);
+  });
+
+  it('surfaces non-conflict errors from updateRef as-is', async () => {
+    const client = makeFakeClient();
+    client.git.getRef.mockResolvedValue({ data: { object: { sha: 'base-commit-sha' } } });
+    client.git.getCommit.mockResolvedValue({ data: { tree: { sha: 'base-tree-sha' } } });
+    client.git.createBlob.mockResolvedValue({ data: { sha: 'blob-sha' } });
+    client.git.createTree.mockResolvedValue({ data: { sha: 'tree-sha' } });
+    client.git.createCommit.mockResolvedValue({ data: { sha: 'commit-sha' } });
+    client.git.updateRef.mockRejectedValue({ status: 500, message: 'server error' });
+
+    await expect(
+      commitFiles([{ path: 'recipes.json', content: '[]' }], 'Add recipe: Test', { client })
+    ).rejects.toMatchObject({ status: 500 });
   });
 });

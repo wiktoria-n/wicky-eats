@@ -40,6 +40,14 @@ function stripSeo(recipe) {
 }
 
 /**
+ * Prevents a literal "</script>" (or "<!--") inside recipe data from
+ * closing the surrounding <script> tag early when embedded into HTML.
+ */
+function escapeForScriptTag(json) {
+  return json.replace(/<\/(script)/gi, '<\\/$1').replace(/<!--/g, '<\\!--');
+}
+
+/**
  * Regenerates the recipes[] JS block (between RECIPES_START/END markers)
  * and the Recipe entries inside the JSON-LD @graph array, from `recipes`
  * (the array stored in recipes.json). Everything else in `html` is left
@@ -51,7 +59,7 @@ function generateHtml(html, recipes) {
   }
 
   const appRecipes = recipes.map(stripSeo);
-  const appJson = JSON.stringify(appRecipes, null, 2);
+  const appJson = escapeForScriptTag(JSON.stringify(appRecipes, null, 2));
   const appInner = appJson.slice(1, -1).trim();
   const startIdx = html.indexOf(RECIPES_START) + RECIPES_START.length;
   const endIdx = html.indexOf(RECIPES_END);
@@ -70,7 +78,7 @@ function generateHtml(html, recipes) {
   const data = JSON.parse(match[2]);
   const nonRecipeEntries = data['@graph'].filter((e) => e['@type'] !== 'Recipe');
   data['@graph'] = [...nonRecipeEntries, ...recipes.map(buildJsonLdRecipe)];
-  const newJsonLd = JSON.stringify(data, null, 2);
+  const newJsonLd = escapeForScriptTag(JSON.stringify(data, null, 2));
 
   return newHtml.slice(0, match.index) +
     match[1] + '\n' + newJsonLd + '\n' + match[3] +

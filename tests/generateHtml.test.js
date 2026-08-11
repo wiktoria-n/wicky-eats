@@ -10,10 +10,10 @@ const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 const recipes = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'recipes.json'), 'utf8'));
 
 function extractAppRecipes(generated) {
-  const scriptMatch = generated.match(/<script(?![^>]*type="application\/ld\+json")[^>]*>([\s\S]*?)<\/script>/);
-  const code = scriptMatch[1];
-  const arrayMatch = code.match(/const recipes = (\[[\s\S]*?\n\]);/);
-  return new Function('return ' + arrayMatch[1])();
+  const start = generated.indexOf('/* RECIPES_START */') + '/* RECIPES_START */'.length;
+  const end = generated.indexOf('/* RECIPES_END */');
+  const arrayInner = generated.slice(start, end);
+  return new Function('return [' + arrayInner + ']')();
 }
 
 function extractJsonLd(generated) {
@@ -103,5 +103,30 @@ describe('generateHtml', () => {
   it('throws if the RECIPES markers are missing', () => {
     const broken = html.replace('/* RECIPES_START */', '').replace('/* RECIPES_END */', '');
     expect(() => generateHtml(broken, recipes)).toThrow(/markers/);
+  });
+
+  it('escapes </script> inside recipe data so it cannot break out of the surrounding <script> tag', () => {
+    const evil = {
+      ...JSON.parse(JSON.stringify(recipes[0])),
+      id: 'evil-recipe',
+      title: 'Evil</script><script>alert(1)</script>',
+      seo: { ...recipes[0].seo, description: 'Safe.' }
+    };
+    const generated = generateHtml(html, [...recipes, evil]);
+
+    // The raw HTML source must never contain an unescaped closing tag
+    // sitting inside recipe data.
+    expect(generated).not.toMatch(/Evil<\/script>/);
+    expect(generated).toContain('Evil<\\/script><script>alert(1)<\\/script>');
+
+    // Round-tripping through the app's JS array and the JSON-LD parser
+    // must still recover the original, unescaped string value.
+    const appRecipes = extractAppRecipes(generated);
+    const evilAppRecipe = appRecipes.find((r) => r.id === 'evil-recipe');
+    expect(evilAppRecipe.title).toBe('Evil</script><script>alert(1)</script>');
+
+    const data = extractJsonLd(generated);
+    const evilJsonLd = data['@graph'].find((e) => e.name && e.name.startsWith('Evil'));
+    expect(evilJsonLd.name).toBe('Evil</script><script>alert(1)</script>');
   });
 });

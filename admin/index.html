@@ -66,7 +66,7 @@
           </select>
         </div>
         <div class="field"><label>Category</label>
-          <select name="category">
+          <select name="category" id="category">
             <option value="cold">cold</option>
             <option value="pastry">pastry</option>
             <option value="mains">mains</option>
@@ -218,6 +218,20 @@ https://schema.org/HighProteinDiet</textarea>
   const form = document.getElementById('recipeForm');
   const msgEl = document.getElementById('msg');
   const submitBtn = document.getElementById('submitBtn');
+  const typeSelect = document.getElementById('type');
+  const categorySelect = document.getElementById('category');
+
+  function syncCategoryToType() {
+    if (typeSelect.value === 'savoury') {
+      categorySelect.value = 'mains';
+      categorySelect.disabled = true;
+    } else {
+      categorySelect.disabled = false;
+      if (categorySelect.value === 'mains') categorySelect.value = 'cold';
+    }
+  }
+  typeSelect.addEventListener('change', syncCategoryToType);
+  syncCategoryToType();
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -236,7 +250,7 @@ https://schema.org/HighProteinDiet</textarea>
         title: fd.get('title'),
         subtitle: fd.get('subtitle'),
         type: fd.get('type'),
-        category: fd.get('category'),
+        category: fd.get('type') === 'savoury' ? 'mains' : fd.get('category'),
         emoji: fd.get('emoji'),
         swatchA: fd.get('swatchA'),
         swatchB: fd.get('swatchB'),

@@ -39,7 +39,7 @@ const seo = z.object({
 });
 
 const image = z.object({
-  filename: z.string().regex(/^[a-z0-9-]+\.(jpg|jpeg|png|webp)$/i, 'lowercase, hyphenated filename with an image extension'),
+  filename: z.string().regex(/^[a-z0-9-]+\.(jpg|jpeg|png|webp)$/, 'lowercase, hyphenated filename with an image extension'),
   data: z.string().min(1, 'base64-encoded image data is required')
 });
 
@@ -89,6 +89,9 @@ function validateRecipe(payload, existingRecipes) {
   const data = result.data;
   if (existingRecipes.some((r) => r.id === data.id)) {
     return { success: false, errors: [`id: "${data.id}" already exists`] };
+  }
+  if (existingRecipes.some((r) => r.image === data.image.filename)) {
+    return { success: false, errors: [`image.filename: "${data.image.filename}" is already used by another recipe`] };
   }
   return { success: true, data };
 }

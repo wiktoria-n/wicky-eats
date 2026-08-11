@@ -5,6 +5,7 @@ describe('auth', () => {
   beforeEach(() => {
     process.env.ADMIN_PASSWORD = 'correct-horse-battery-staple';
     process.env.SESSION_SECRET = 'test-secret-value';
+    delete process.env.NETLIFY_DEV;
   });
 
   it('accepts the correct password and rejects a wrong one', () => {
@@ -26,5 +27,20 @@ describe('auth', () => {
 
   it('clearSessionCookie sets Max-Age=0', () => {
     expect(clearSessionCookie()).toMatch(/Max-Age=0/);
+  });
+
+  it('sets Secure by default (production/deployed contexts)', () => {
+    expect(createSessionCookie()).toMatch(/;\s*Secure;/);
+    expect(clearSessionCookie()).toMatch(/;\s*Secure;/);
+  });
+
+  it('omits Secure under `netlify dev` so local login over HTTP still works', () => {
+    process.env.NETLIFY_DEV = 'true';
+    const cookieHeader = createSessionCookie();
+    expect(cookieHeader).not.toMatch(/Secure/);
+    expect(cookieHeader).toMatch(/HttpOnly;\s*SameSite=Strict/);
+    // still valid and still recognized as authenticated
+    const cookieValue = cookieHeader.split(';')[0];
+    expect(isAuthenticated({ headers: { cookie: cookieValue } })).toBe(true);
   });
 });

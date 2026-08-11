@@ -34,17 +34,32 @@ async function getFile(path, client = getClient()) {
   };
 }
 
+class CommitConflictError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'CommitConflictError';
+    this.conflict = true;
+  }
+}
+
 /**
  * Commits one or more file changes to the target branch as a single commit,
  * using the Git Data API (blob -> tree -> commit -> ref update) so the
- * change is atomic. Retries once on a non-fast-forward conflict.
+ * change is atomic.
+ *
+ * On a non-fast-forward conflict (someone else committed in the meantime)
+ * this throws a CommitConflictError rather than retrying itself: `files`
+ * was built from content read before the conflict, so blindly recommitting
+ * it would silently overwrite whatever the other commit just wrote. The
+ * caller is the one who knows how to re-fetch and regenerate that content,
+ * so it owns the retry.
  *
  * @param {{path: string, content: string, encoding?: 'utf-8'|'base64'}[]} files
  * @param {string} message
- * @param {{client?: import('@octokit/rest').Octokit, attempt?: number}} [opts]
+ * @param {{client?: import('@octokit/rest').Octokit}} [opts]
  */
 async function commitFiles(files, message, opts = {}) {
-  const { client = getClient(), attempt = 0 } = opts;
+  const { client = getClient() } = opts;
   const { owner, repo, branch } = getRepoConfig();
 
   const ref = await client.git.getRef({ owner, repo, ref: `heads/${branch}` });
@@ -93,8 +108,8 @@ async function commitFiles(files, message, opts = {}) {
       sha: newCommit.data.sha
     });
   } catch (err) {
-    if (err.status === 422 && attempt < 1) {
-      return commitFiles(files, message, { client, attempt: attempt + 1 });
+    if (err.status === 422) {
+      throw new CommitConflictError('branch moved before the commit could land; caller should re-fetch and retry');
     }
     throw err;
   }
@@ -105,4 +120,4 @@ async function commitFiles(files, message, opts = {}) {
   };
 }
 
-module.exports = { getFile, commitFiles, getRepoConfig };
+module.exports = { getFile, commitFiles, getRepoConfig, CommitConflictError };

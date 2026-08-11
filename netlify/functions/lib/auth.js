@@ -24,13 +24,23 @@ function checkPassword(submitted) {
   return crypto.timingSafeEqual(a, b);
 }
 
+/**
+ * `netlify dev` sets NETLIFY_DEV=true and typically serves over plain
+ * HTTP; the Secure cookie attribute strictly requires HTTPS transport, so
+ * it's omitted there to keep local login working, and always included
+ * everywhere else (Netlify's actual deploys are always HTTPS).
+ */
+function secureAttr() {
+  return process.env.NETLIFY_DEV === 'true' ? '' : ' Secure;';
+}
+
 function createSessionCookie() {
   const token = jwt.sign({ role: 'admin' }, getSessionSecret(), { expiresIn: SESSION_TTL_SECONDS });
-  return `${COOKIE_NAME}=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${SESSION_TTL_SECONDS}`;
+  return `${COOKIE_NAME}=${token}; HttpOnly;${secureAttr()} SameSite=Strict; Path=/; Max-Age=${SESSION_TTL_SECONDS}`;
 }
 
 function clearSessionCookie() {
-  return `${COOKIE_NAME}=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0`;
+  return `${COOKIE_NAME}=; HttpOnly;${secureAttr()} SameSite=Strict; Path=/; Max-Age=0`;
 }
 
 function parseCookies(cookieHeader) {
