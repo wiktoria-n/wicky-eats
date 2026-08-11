@@ -1050,6 +1050,15 @@ let activeCategory = "all";
 let currentServings = {};
 let likedRecipes = {};
 
+function escapeHtml(value){
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 const catRow = document.getElementById('catRow');
 function renderCategories(){
   catRow.innerHTML = categories.map(c => `
@@ -1088,14 +1097,14 @@ function renderList(){
   recipeList.innerHTML = list.map(r => `
     <div class="rcard" data-id="${r.id}" style="--swatch-a:${r.swatchA}; --swatch-b:${r.swatchB};">
       <div class="rcard-photo" style="--swatch-a:${r.swatchA}; --swatch-b:${r.swatchB};">
-        <span class="rcard-badge">${r.badge.icon} ${r.badge.label}</span>
-        ${r.image ? `<img class="rcard-img" src="${r.image}" alt="${r.title}" style="object-position:${r.imagePosition || 'center'}">` : r.emoji}
+        <span class="rcard-badge">${escapeHtml(r.badge.icon)} ${escapeHtml(r.badge.label)}</span>
+        ${r.image ? `<img class="rcard-img" src="${r.image}" alt="${escapeHtml(r.title)}" style="object-position:${escapeHtml(r.imagePosition || 'center')}">` : escapeHtml(r.emoji)}
       </div>
       <div class="rcard-body">
-        <div class="rcard-title">${r.title}</div>
-        <div class="rcard-sub">${r.subtitle}</div>
+        <div class="rcard-title">${escapeHtml(r.title)}</div>
+        <div class="rcard-sub">${escapeHtml(r.subtitle)}</div>
         <div class="stat-row">
-          <span class="stat-pill lav">🕐 ${r.time}</span>
+          <span class="stat-pill lav">🕐 ${escapeHtml(r.time)}</span>
         </div>
         <div class="card-macro-row">
           <div><b>${r.macros.kcal}</b><span>kcal</span></div>
@@ -1120,10 +1129,10 @@ function renderSavoury(){
     <div class="savoury-heading">Savoury Recipes</div>
     ${savoury.map(r => `
       <div class="scard" data-id="${r.id}">
-        <span class="scard-emoji">${r.emoji}</span>
+        <span class="scard-emoji">${escapeHtml(r.emoji)}</span>
         <div class="scard-info">
-          <div class="scard-title">${r.title}</div>
-          <div class="scard-sub">${r.subtitle}</div>
+          <div class="scard-title">${escapeHtml(r.title)}</div>
+          <div class="scard-sub">${escapeHtml(r.subtitle)}</div>
         </div>
         <span class="scard-kcal">${r.macros.kcal} kcal</span>
       </div>
@@ -1178,11 +1187,11 @@ function renderDetail(r){
       <button class="round-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${r.id}')">${liked ? '♥' : '♡'}</button>
     </div>
     <div class="detail-photo" style="--swatch-a:${r.swatchA}; --swatch-b:${r.swatchB};">
-      ${r.image ? `<img class="detail-img" src="${r.image}" alt="${r.title}" style="object-position:${r.imagePosition || 'center'}">` : r.emoji}
+      ${r.image ? `<img class="detail-img" src="${r.image}" alt="${escapeHtml(r.title)}" style="object-position:${escapeHtml(r.imagePosition || 'center')}">` : escapeHtml(r.emoji)}
     </div>
     <div class="detail-body">
-      <div class="detail-title">${r.title}, <span class="kcal">${r.macros.kcal} Kcal</span></div>
-      <div class="detail-sub">${r.subtitle}</div>
+      <div class="detail-title">${escapeHtml(r.title)}, <span class="kcal">${r.macros.kcal} Kcal</span></div>
+      <div class="detail-sub">${escapeHtml(r.subtitle)}</div>
       <div class="macro-table">
         <div class="macro-cell"><div class="label">protein</div><div class="val">${r.macros.protein}g</div></div>
         <div class="macro-cell"><div class="label">fat</div><div class="val">${r.macros.fat}g</div></div>
@@ -1198,24 +1207,24 @@ function renderDetail(r){
       <ul class="ingredients">
         ${r.ingredientSections
           ? r.ingredientSections.map(sec => `
-              <li class="ing-section-header">${sec.label}</li>
+              <li class="ing-section-header">${escapeHtml(sec.label)}</li>
               ${sec.items.map(ing => {
                 const scaled = scaleAmount(ing.amount, r.baseServings, servings);
-                const amtStr = ing.unit ? `${scaled} ${ing.unit}` : `${scaled}`;
-                return `<li><span>${ing.name}</span><span class="amt">${amtStr}</span></li>`;
+                const amtStr = ing.unit ? `${scaled} ${escapeHtml(ing.unit)}` : `${scaled}`;
+                return `<li><span>${escapeHtml(ing.name)}</span><span class="amt">${amtStr}</span></li>`;
               }).join('')}
             `).join('')
           : r.ingredients.map(ing => {
               const scaled = scaleAmount(ing.amount, r.baseServings, servings);
-              const amtStr = ing.unit ? `${scaled} ${ing.unit}` : `${scaled}`;
-              return `<li><span>${ing.name}</span><span class="amt">${amtStr}</span></li>`;
+              const amtStr = ing.unit ? `${scaled} ${escapeHtml(ing.unit)}` : `${scaled}`;
+              return `<li><span>${escapeHtml(ing.name)}</span><span class="amt">${amtStr}</span></li>`;
             }).join('')
         }
       </ul>
 
       <div class="section-label">Instructions</div>
       <ol class="steps">
-        ${r.steps.map((s,i) => `<li><span class="step-num">${i+1}</span><span>${s}</span></li>`).join('')}
+        ${r.steps.map((s,i) => `<li><span class="step-num">${i+1}</span><span>${escapeHtml(s)}</span></li>`).join('')}
       </ol>
     </div>
   `;
