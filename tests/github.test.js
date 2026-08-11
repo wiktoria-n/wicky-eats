@@ -18,8 +18,6 @@ function makeFakeClient() {
 describe('github helper', () => {
   beforeEach(() => {
     process.env.GITHUB_TOKEN = 'fake-token';
-    process.env.GITHUB_REPO = 'wiktoria-n/wicky-eats';
-    process.env.GITHUB_BRANCH = 'main';
   });
 
   it('getFile decodes base64 content and returns the sha', async () => {

@@ -18,8 +18,8 @@ Recipes can be added at `/admin` (password-protected) instead of hand-editing `i
 | `ADMIN_PASSWORD` | Password checked by `/api/login` to grant access to `/admin`. |
 | `SESSION_SECRET` | Random secret used to sign the login session cookie (JWT). |
 | `GITHUB_TOKEN` | Fine-grained GitHub PAT, scoped to this repo only, with **Contents: Read and write** permission. |
-| `GITHUB_REPO` | `owner/repo`, e.g. `wiktoria-n/wicky-eats`. |
-| `GITHUB_BRANCH` | Branch the API commits to, e.g. `main`. |
+
+(The target repo/branch — `wiktoria-n/wicky-eats` / `main` — are hardcoded in `netlify/functions/lib/github.js` rather than configurable, since this app only ever commits to itself.)
 
 3. Push to the connected branch — Netlify auto-deploys the static site and functions together.
 

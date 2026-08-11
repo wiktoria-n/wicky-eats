@@ -8,14 +8,11 @@ function getClient() {
   return new Octokit({ auth: token });
 }
 
+// This function only ever commits to this one repo/branch, so these are
+// fixed rather than configurable — no reason to make deploy setup depend
+// on getting non-secret config right too.
 function getRepoConfig() {
-  const repo = process.env.GITHUB_REPO; // "owner/name"
-  const branch = process.env.GITHUB_BRANCH || 'main';
-  if (!repo || !repo.includes('/')) {
-    throw new Error('GITHUB_REPO must be set to "owner/name"');
-  }
-  const [owner, name] = repo.split('/');
-  return { owner, repo: name, branch };
+  return { owner: 'wiktoria-n', repo: 'wicky-eats', branch: 'main' };
 }
 
 /**
