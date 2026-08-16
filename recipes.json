@@ -516,5 +516,103 @@
         "sliced jalapeño and chopped coriander, to garnish (optional)"
       ]
     }
+  },
+  {
+    "id": "strawberry-mousse",
+    "image": "strawberry-mousse.jpg",
+    "type": "dessert",
+    "title": "High Protein Strawberry Mousse",
+    "subtitle": "Fluffy, no-bake strawberry mousse blended with Greek yogurt and protein powder",
+    "emoji": "🍓",
+    "swatchA": "#F5C9DE",
+    "swatchB": "#E8778F",
+    "category": "cold",
+    "badge": { "icon": "🌙", "label": "No-Bake" },
+    "time": "10 mins + 3 hrs chill",
+    "baseServings": 1,
+    "macros": { "kcal": 291, "protein": 55, "carbs": 16, "fat": 2 },
+    "ingredients": [
+      { "amount": 250, "unit": "ml", "name": "boiling water" },
+      { "amount": 1, "unit": null, "name": "sachet sugar-free strawberry jelly mix" },
+      { "amount": 290, "unit": "g", "name": "0% fat Greek yogurt" },
+      { "amount": 1, "unit": "scoop", "name": "vanilla protein powder" },
+      { "amount": 1, "unit": "pinch", "name": "salt" }
+    ],
+    "steps": [
+      "Dissolve the strawberry jelly mix in the boiling water and set aside to cool slightly.",
+      "Blend the yoghurt, jelly mixture, protein powder, and salt together until smooth.",
+      "Pour into a bowl and refrigerate for 3 hours until set."
+    ],
+    "seo": {
+      "description": "Fluffy, no-bake strawberry mousse blended with Greek yogurt and protein powder. 291 kcal, 55g protein for the whole bowl.",
+      "keywords": "high protein strawberry mousse, no bake dessert, high protein dessert, greek yogurt mousse, sugar free jelly dessert, fat loss dessert, busy women dessert",
+      "prepTime": "PT10M",
+      "cookTime": null,
+      "totalTime": "PT10M",
+      "recipeYield": "1 serving",
+      "recipeCategory": "Dessert",
+      "recipeCuisine": "Healthy No-Bake",
+      "suitableForDiet": ["https://schema.org/LowCalorieDiet", "https://schema.org/HighProteinDiet"],
+      "recipeIngredient": [
+        "250ml boiling water",
+        "1 sachet sugar-free strawberry jelly mix",
+        "290g 0% fat Greek yogurt",
+        "1 scoop vanilla protein powder",
+        "pinch of salt"
+      ]
+    }
+  },
+  {
+    "id": "cinnamon-bread-sticks",
+    "image": "cinnamon-bread-sticks.jpg",
+    "type": "dessert",
+    "title": "High Protein Cinnamon Bread Sticks",
+    "subtitle": "Soft blended oat bread swirled with cinnamon — just 190 kcal for the whole loaf",
+    "emoji": "🍞",
+    "swatchA": "#F5C99A",
+    "swatchB": "#C4813A",
+    "category": "pastry",
+    "badge": { "icon": "🔥", "label": "Baked" },
+    "time": "15 mins",
+    "baseServings": 1,
+    "macros": { "kcal": 190, "protein": 12, "carbs": 31, "fat": 3 },
+    "ingredients": [
+      { "amount": 0.5, "unit": "cup", "name": "oats" },
+      { "amount": 0.5, "unit": "scoop", "name": "vanilla protein powder" },
+      { "amount": 1, "unit": null, "name": "egg white" },
+      { "amount": 0.67, "unit": "cup", "name": "water" },
+      { "amount": 1, "unit": "tsp", "name": "stevia" },
+      { "amount": 1, "unit": "tsp", "name": "baking soda" },
+      { "amount": 1, "unit": "tbsp", "name": "cinnamon" }
+    ],
+    "steps": [
+      "Preheat the oven to 390°F (200°C).",
+      "Blend the oats, protein powder, egg white, water, stevia, and baking soda together until smooth, keeping the cinnamon aside.",
+      "Pour half the batter into a lightly lined loaf pan.",
+      "Sprinkle half the cinnamon on top and swirl it in with a knife.",
+      "Pour the remaining batter on top, sprinkle with the rest of the cinnamon, and swirl it in.",
+      "Bake for 12 minutes, then let rest before slicing and serving."
+    ],
+    "notes": "Makes about 6 slices — roughly 32 kcal per slice if you cut it that way.",
+    "seo": {
+      "description": "Soft, blended oat bread swirled with cinnamon — just 190 kcal and 12g protein for the whole loaf.",
+      "keywords": "high protein cinnamon bread, oat flour bread, healthy baking, low calorie bread, fat loss baking, high protein breakfast, busy women baking",
+      "prepTime": "PT10M",
+      "cookTime": "PT12M",
+      "totalTime": "PT22M",
+      "recipeYield": "1 serving",
+      "recipeCategory": "Dessert",
+      "recipeCuisine": "Healthy Baking",
+      "suitableForDiet": ["https://schema.org/LowCalorieDiet", "https://schema.org/HighProteinDiet"],
+      "recipeIngredient": [
+        "1/2 cup oats",
+        "1/2 scoop vanilla protein powder",
+        "1 egg white",
+        "2/3 cup water",
+        "1 tsp stevia",
+        "1 tsp baking soda",
+        "1 tbsp cinnamon"
+      ]
+    }
   }
 ]
